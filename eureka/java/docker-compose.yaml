@@ -1,0 +1,58 @@
+
+
+services:
+
+  eureka-server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    environment:
+      - PORT=8761
+    ports:
+      - 8076:8761
+    networks:
+      - discovery-bridge
+
+  api-service-01:
+    build:
+      context: application-service-1
+      dockerfile: Dockerfile
+    container_name: api-01
+    environment:
+      - PORT=8077
+      - EUREKA_SERVER_URL=eureka-server:8761/eureka/
+    ports:
+      - 8077:8080
+    networks:
+      - discovery-bridge
+
+  api-service-02:
+    build:
+      context: application-service-2
+      dockerfile: Dockerfile
+    container_name: api-02
+    environment:
+      - PORT=8078
+      - EUREKA_SERVER_URL=eureka-server:8761/eureka/
+    ports:
+      - 8078:8080
+    networks:
+      - discovery-bridge
+
+  api-service-02-replica:
+    build:
+      context: application-service-2
+      dockerfile: Dockerfile
+    container_name: api-02-replica
+    environment:
+      - PORT=8079
+      - EUREKA_SERVER_URL=eureka-server:8761/eureka/
+    ports:
+      - 8079:8080
+    networks:
+      - discovery-bridge
+
+networks:
+  discovery-bridge:
+    driver: bridge

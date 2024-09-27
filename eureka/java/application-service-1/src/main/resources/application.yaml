@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: application-service-1
+server:
+  port: ${PORT}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}
