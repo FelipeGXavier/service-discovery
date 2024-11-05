@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/google/uuid"
 	"go.etcd.io/etcd/clientv3"
 )
 
 func RegisterService(etcdClient *clientv3.Client, serviceName string, serviceIpv4Address string) error {
-	servicePrefix := fmt.Sprintf("/services/%s/%s", serviceName, uuid.New().String())
+	servicePrefix := fmt.Sprintf("/services/%s", serviceName)
 	leaseTtl := int64(60)
 	lease, err := etcdClient.Grant(context.Background(), leaseTtl)
 	if err != nil {

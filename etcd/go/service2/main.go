@@ -1,9 +1,9 @@
 package main
 
 import (
-	"io"
+	"context"
+	"fmt"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/FelipeGXavier/service-discovery/etcd/go/service1/pkg/discovery"
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	log.Println("start service 01")
+	log.Println("start service 02")
 	etcdClient, err := clientv3.New(
 		clientv3.Config{
 			Endpoints:   []string{"localhost:2379"},
@@ -29,21 +29,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println(ipv4Address + ":3333")
+	log.Println(ipv4Address)
 
-	err = discovery.RegisterService(etcdClient, "service1", ipv4Address+":3333")
+	err = discovery.RegisterService(etcdClient, "service1", ipv4Address)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello World")
-	})
+	TestCallService(etcdClient)
 
-	err = http.ListenAndServe(":3333", nil)
+	resp, err := etcdClient.Get(context.Background(), "", clientv3.WithPrefix())
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Iterate through each key-value pair and print the key
+	for _, kv := range resp.Kvs {
+		fmt.Printf("Key: %s, Value: %s\n", kv.Key, kv.Value)
+	}
+
+	for {
+
 	}
 
 }
